@@ -3,9 +3,11 @@ import shlex
 import sys
 from unittest.mock import patch
 
-from pico import FakeModelClient, MiniAgent, SessionStore, WorkspaceContext
-from pico import cli as mini_cli
-from pico.task_state import TaskState
+import pytest
+
+from pure import FakeModelClient, MiniAgent, SessionStore, WorkspaceContext
+from pure.cli import cli as mini_cli
+from pure.core.task_state import TaskState
 
 
 def build_workspace(tmp_path):
@@ -15,7 +17,7 @@ def build_workspace(tmp_path):
 
 def build_agent(tmp_path, outputs, **kwargs):
     workspace = build_workspace(tmp_path)
-    store = SessionStore(tmp_path / ".pico" / "sessions")
+    store = SessionStore(tmp_path / ".pure" / "sessions")
     approval_policy = kwargs.pop("approval_policy", "auto")
     return MiniAgent(
         model_client=FakeModelClient(outputs),
@@ -38,7 +40,11 @@ def test_workspace_escape_is_rejected(tmp_path):
 def test_symlink_path_traversal_is_rejected(tmp_path):
     outside = tmp_path.parent / f"{tmp_path.name}-outside.txt"
     outside.write_text("outside\n", encoding="utf-8")
-    (tmp_path / "linked.txt").symlink_to(outside)
+    try:
+        (tmp_path / "linked.txt").symlink_to(outside)
+    except OSError as exc:
+        # Windows may require elevated privileges to create symlinks.
+        raise pytest.skip(f"symlink creation not permitted: {exc}") from exc
     agent = build_agent(tmp_path, [])
 
     result = agent.run_tool("read_file", {"path": "linked.txt"})
@@ -65,7 +71,7 @@ def test_cli_build_agent_wires_secret_env_names_from_parser(tmp_path):
 
     (tmp_path / "README.md").write_text("demo\n", encoding="utf-8")
     with patch.dict(os.environ, {"GITHUB_PAT": "ghp-1", "GH_PAT": "ghp-2"}, clear=True), patch(
-        "pico.cli.OllamaModelClient",
+        "pure.cli.cli.OllamaModelClient",
         DummyModelClient,
     ):
         args = mini_cli.build_arg_parser().parse_args(
@@ -95,7 +101,7 @@ def test_cli_build_agent_uses_default_configured_secret_names(tmp_path):
 
     (tmp_path / "README.md").write_text("demo\n", encoding="utf-8")
     with patch.dict(os.environ, {"GH_PAT": "ghp-default-1"}, clear=True), patch(
-        "pico.cli.OllamaModelClient",
+        "pure.cli.cli.OllamaModelClient",
         DummyModelClient,
     ):
         args = mini_cli.build_arg_parser().parse_args(["--cwd", str(tmp_path), "--approval", "auto"])
@@ -113,11 +119,11 @@ def test_cli_build_agent_loads_project_env_secrets_before_redaction_setup(tmp_pa
             raise AssertionError("model should not be invoked")
 
     (tmp_path / "README.md").write_text("demo\n", encoding="utf-8")
-    (tmp_path / ".env").write_text("PICO_DEEPSEEK_API_KEY=sk-project-secret\n", encoding="utf-8")
-    with patch.dict(os.environ, {}, clear=True), patch("pico.cli.AnthropicCompatibleModelClient", DummyModelClient):
+    (tmp_path / ".env").write_text("PURE_DEEPSEEK_API_KEY=sk-project-secret\n", encoding="utf-8")
+    with patch.dict(os.environ, {}, clear=True), patch("pure.cli.cli.AnthropicCompatibleModelClient", DummyModelClient):
         args = mini_cli.build_arg_parser().parse_args(["--cwd", str(tmp_path), "--provider", "deepseek"])
         agent = mini_cli.build_agent(args)
-        assert agent.secret_env_summary()["secret_env_names"] == ["PICO_DEEPSEEK_API_KEY"]
+        assert agent.secret_env_summary()["secret_env_names"] == ["PURE_DEEPSEEK_API_KEY"]
 
 
 def test_cli_build_agent_reads_secret_names_from_environment_config(tmp_path):
@@ -137,7 +143,7 @@ def test_cli_build_agent_reads_secret_names_from_environment_config(tmp_path):
             "MINI_CODING_AGENT_SECRET_ENV_NAMES": "MCA_CUSTOM_SECRET",
         },
         clear=True,
-    ), patch("pico.cli.OllamaModelClient", DummyModelClient):
+    ), patch("pure.cli.cli.OllamaModelClient", DummyModelClient):
         args = mini_cli.build_arg_parser().parse_args(["--cwd", str(tmp_path), "--approval", "auto"])
         agent = mini_cli.build_agent(args)
         assert agent.secret_env_summary()["secret_env_names"] == ["MCA_CUSTOM_SECRET"]
@@ -145,9 +151,16 @@ def test_cli_build_agent_reads_secret_names_from_environment_config(tmp_path):
 
 def test_run_shell_uses_allowlisted_environment_only(tmp_path):
     secret = "shh-allowlist-secret"
-    agent = build_agent(tmp_path, [], approval_policy="auto")
-    script = 'import os; print(os.getenv("MCA_ALLOWLIST_SECRET", "missing"))'
-    command = f"{shlex.quote(sys.executable)} -c {shlex.quote(script)}"
+    allowlist = None
+    if os.name == "nt":
+        # On Windows, subprocess(shell=True) requires ComSpec/SystemRoot to locate cmd.exe.
+        allowlist = tuple(getattr(build_agent(tmp_path, [], approval_policy="auto"), "shell_env_allowlist", ())) + ("ComSpec", "SystemRoot")
+    agent = build_agent(tmp_path, [], approval_policy="auto", shell_env_allowlist=allowlist)
+    script = "import os; print(os.getenv('MCA_ALLOWLIST_SECRET', 'missing'))"
+    if os.name == "nt":
+        command = f"\"{sys.executable}\" -c \"{script}\""
+    else:
+        command = f"{shlex.quote(sys.executable)} -c {shlex.quote(script)}"
 
     with patch.dict(os.environ, {"MCA_ALLOWLIST_SECRET": secret}, clear=False):
         result = agent.run_tool("run_shell", {"command": command, "timeout": 20})
@@ -159,7 +172,7 @@ def test_run_shell_uses_allowlisted_environment_only(tmp_path):
 def test_bound_tool_methods_delegate_into_tools_module(tmp_path):
     agent = build_agent(tmp_path, [], approval_policy="auto")
 
-    with patch("pico.tools.subprocess.run") as fake_run:
+    with patch("pure.tools.toolkit.subprocess.run") as fake_run:
         fake_run.return_value = type(
             "Result",
             (),
@@ -169,9 +182,9 @@ def test_bound_tool_methods_delegate_into_tools_module(tmp_path):
 
     assert "toolkit-shell" in shell_result
     fake_run.assert_called_once()
-    assert agent.tool_run_shell.__func__.__module__ == "pico.runtime"
+    assert agent.tool_run_shell.__func__.__module__ == "pure.core.runtime"
 
-    with patch("pico.tools.tool_delegate", return_value="toolkit-delegate") as fake_delegate:
+    with patch("pure.tools.toolkit.tool_delegate", return_value="toolkit-delegate") as fake_delegate:
         delegate_result = agent.tool_delegate({"task": "inspect README.md", "max_steps": 2})
 
     assert delegate_result == "toolkit-delegate"

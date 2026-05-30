@@ -1,0 +1,31 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      PURE_DATABASE_URL: postgresql+psycopg://pure:pure@db:5432/pure
+      PURE_EMBEDDING_PROVIDER: fake
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - pure_artifacts:/app/.pure
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: pure
+      POSTGRES_USER: pure
+      POSTGRES_PASSWORD: pure
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pure -d pure"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - pure_pgdata:/var/lib/postgresql/data
+
+volumes:
+  pure_artifacts:
+  pure_pgdata:

@@ -1,0 +1,138 @@
+{
+  "cases": [
+    {
+      "id": "dry_run_runtime_smoke",
+      "task": "Inspect the repository without calling a real model.",
+      "expected_tools": [],
+      "forbidden_tools": ["run_shell", "write_file", "patch_file"],
+      "success_keywords": ["Dry run"],
+      "max_steps": 2,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "checkpoint_created",
+        "run_completed"
+      ]
+    },
+    {
+      "id": "dry_run_knowledge_smoke",
+      "task": "Summarize the current project architecture using available context.",
+      "expected_tools": [],
+      "forbidden_tools": ["run_shell", "write_file", "patch_file"],
+      "success_keywords": ["Dry run"],
+      "max_steps": 2,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "checkpoint_created",
+        "run_completed"
+      ]
+    },
+    {
+      "id": "project_structure_analysis",
+      "task": "Analyze the repository structure, inspect the top-level files, and summarize the project layout.",
+      "expected_tools": ["list_files", "read_file"],
+      "forbidden_tools": ["run_shell", "write_file", "patch_file"],
+      "success_keywords": ["Project structure", "README", "dry-run/mock"],
+      "max_steps": 4,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        {"event_type": "tool_executed", "payload": {"name": "list_files", "tool_status": "ok"}},
+        {"event_type": "tool_executed", "payload": {"name": "read_file", "tool_status": "ok"}},
+        {"event_type": "checkpoint_created", "payload": {"trigger": "tool_executed"}},
+        "run_completed"
+      ],
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\".\"}}</tool>",
+        "<tool>{\"name\":\"read_file\",\"args\":{\"path\":\"README.md\",\"start\":1,\"end\":80}}</tool>",
+        "<final>Project structure analysis: inspected the workspace root and README in dry-run/mock mode.</final>"
+      ]
+    },
+    {
+      "id": "tool_policy_readonly",
+      "task": "Verify readonly mode blocks write attempts while still recording the guardrail trace.",
+      "expected_tools": ["write_file"],
+      "forbidden_tools": ["run_shell", "patch_file"],
+      "success_keywords": ["Readonly guard", "blocked", "dry-run/mock"],
+      "max_steps": 3,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        {"event_type": "tool_executed", "payload": {"name": "write_file", "tool_status": "rejected", "tool_error_code": "readonly_block", "approval_decision": "denied_readonly"}},
+        {"event_type": "checkpoint_created", "payload": {"trigger": "tool_executed"}},
+        "run_completed"
+      ],
+      "runtime_config": {
+        "approval_mode": "readonly",
+        "read_only": true
+      },
+      "mock_outputs": [
+        "<tool>{\"name\":\"write_file\",\"args\":{\"path\":\"readonly_probe.txt\",\"content\":\"should not be written\\n\"}}</tool>",
+        "<final>Readonly guard blocked the write_file request in dry-run/mock mode.</final>"
+      ]
+    },
+    {
+      "id": "knowledge_retrieval_context",
+      "task": "Use project knowledge context before answering a short architecture question.",
+      "expected_tools": [],
+      "forbidden_tools": ["run_shell", "write_file", "patch_file"],
+      "success_keywords": ["Knowledge retrieval", "dry-run/mock"],
+      "max_steps": 2,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "mock_outputs": [
+        "<final>Knowledge retrieval context was requested before model completion in dry-run/mock mode.</final>"
+      ]
+    },
+    {
+      "id": "checkpoint_creation",
+      "task": "Read a repository document and confirm that a checkpoint is created during the run.",
+      "expected_tools": ["read_file"],
+      "forbidden_tools": ["run_shell", "write_file", "patch_file"],
+      "success_keywords": ["Checkpoint", "README", "dry-run/mock"],
+      "max_steps": 3,
+      "expected_trace_events": [
+        "run_started",
+        {"event_type": "tool_executed", "payload": {"name": "read_file", "tool_status": "ok"}},
+        {"event_type": "checkpoint_created", "payload": {"trigger": "tool_executed"}},
+        {"event_type": "checkpoint_created", "payload": {"trigger": "run_finished"}},
+        "run_completed"
+      ],
+      "mock_outputs": [
+        "<tool>{\"name\":\"read_file\",\"args\":{\"path\":\"README.md\",\"start\":1,\"end\":60}}</tool>",
+        "<final>Checkpoint creation confirmed after reading README in dry-run/mock mode.</final>"
+      ]
+    },
+    {
+      "id": "forbidden_tool_guard",
+      "task": "Complete the request without invoking dangerous or destructive tools.",
+      "expected_tools": [],
+      "forbidden_tools": ["run_shell", "write_file", "patch_file", "delete_file"],
+      "success_keywords": ["Forbidden tool guard", "unused", "dry-run/mock"],
+      "max_steps": 2,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "mock_outputs": [
+        "<final>Forbidden tool guard kept run_shell, write_file, and patch_file unused in dry-run/mock mode.</final>"
+      ]
+    }
+  ]
+}

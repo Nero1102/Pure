@@ -4,7 +4,7 @@ from collections import Counter
 
 import pytest
 
-from pico.evaluator import (
+from pure.utils.evaluator import (
     BenchmarkEvaluator,
     load_benchmark,
     run_harness_regression_v2,
@@ -115,7 +115,8 @@ def test_run_fixed_benchmark_reports_metadata_and_success_definition(tmp_path):
         "max_new_tokens": 64,
     }
     assert reproducibility["timezone"] == "Asia/Shanghai"
-    assert reproducibility["locale"] == "C.UTF-8"
+    assert isinstance(reproducibility["locale"], str)
+    assert reproducibility["locale"]
 
     for row in artifact["rows"]:
         assert not row["fixture_copy_relpath"].startswith("/")

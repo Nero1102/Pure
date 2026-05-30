@@ -3,14 +3,25 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pico"
+name = "pure"
 version = "0.1.0"
-description = "Small local coding agent for Ollama, OpenAI-compatible, Anthropic-compatible, and DeepSeek models"
+description = "Agent runtime platform for long-lived technical tasks over code repositories"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+  "alembic>=1.13.0",
+  "fastapi>=0.115.0",
+  "psycopg[binary]>=3.2.0",
+  "sqlalchemy>=2.0.0",
+  "uvicorn>=0.30.0",
+]
+
+[project.optional-dependencies]
+faiss = [
+  "faiss-cpu>=1.8.0",
+]
 
 [project.scripts]
-pico = "pico.cli:main"
+pure = "pure.cli.cli:main"
 
 [dependency-groups]
 dev = [
@@ -18,5 +29,5 @@ dev = [
   "ruff>=0.4.4",
 ]
 
-[tool.setuptools]
-packages = ["pico"]
+[tool.setuptools.packages.find]
+include = ["pure*"]

@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(git -C d:\\\\project\\\\pure ls-files | Where-Object { $_ -match '__pycache__|\\\\.pyc|\\\\.pytest_cache|\\\\.pure|\\\\.git|egg-info|dist/|build/|\\\\.env[^.]' })",
+      "PowerShell(git -C d:\\\\project\\\\pure status --short)",
+      "PowerShell(git -C d:\\\\project\\\\pure log --oneline -5)",
+      "Bash(git -C \"d:\\\\project\\\\pure\" log --oneline -20)",
+      "Bash(Select-Object FullName)",
+      "Bash(grep -v \":0$\")",
+      "Bash(git rm *)",
+      "PowerShell(if \\(Test-Path .pytest_cache\\) { \"EXISTS: .pytest_cache\" } else { \"No .pytest_cache\" }; if \\(Test-Path .pure\\) { \"EXISTS: .pure\" } else { \"No .pure\" }; Get-ChildItem -Recurse -Directory -Filter \"__pycache__\" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName })",
+      "PowerShell(if \\($?\\) { \"Removed .pytest_cache/\" } else { \"Failed or already gone\" })",
+      "Bash(git mv *)",
+      "Bash(python -m pytest tests/ -v --tb=short)",
+      "Bash(python -c \"import pure; print\\('Pure imported OK, version:', pure.__path__\\)\")",
+      "Bash(Get-ChildItem .pure\\\\runs -Directory)",
+      "Bash(Sort-Object LastWriteTime -Descending)",
+      "Bash(Select-Object -First 3 Name, LastWriteTime)",
+      "PowerShell(Get-ChildItem .pure\\\\runs -Directory | Sort-Object LastWriteTime -Descending | Select-Object -First 3 | ForEach-Object { $_.Name + \"  \" + $_.LastWriteTime })"
+    ]
+  }
+}

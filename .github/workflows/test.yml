@@ -1,0 +1,55 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  default-test:
+    name: default-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: |
+          python -m pip install -U pip
+          python -m pip install pytest
+          python -m pip install -e .
+
+      - name: Run hermetic tests
+        run: pytest
+
+  faiss-test:
+    name: faiss-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package with FAISS
+        run: |
+          python -m pip install -U pip
+          python -m pip install pytest
+          python -m pip install -e ".[faiss]"
+
+      - name: Verify FAISS imports
+        run: python -c "import faiss, numpy"
+
+      - name: Run FAISS tests
+        run: pytest tests/test_knowledge.py -k "faiss" -vv
