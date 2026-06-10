@@ -1,0 +1,370 @@
+{
+  "schema_version": 1,
+  "description": "Offline scripted cases for measuring Pure context compression by prompt character length. These cases contain inputs only, not benchmark results.",
+  "cases": [
+    {
+      "case_id": "short_history_no_reduction",
+      "user_prompt": "Summarize the short fixture and keep the phrase short history benchmark.",
+      "history": [
+        {"role": "user", "content": "Earlier request: inspect README quickly."},
+        {"role": "assistant", "content": "Earlier answer: README is present."}
+      ],
+      "memory": {"notes": []},
+      "knowledge_items": [],
+      "tool_observations": [],
+      "mock_outputs": ["<final>Short history benchmark completed.</final>"],
+      "expected_final_keywords": ["short history benchmark"],
+      "current_request_must_contain": ["short history benchmark"],
+      "max_steps": 2,
+      "baseline_config": {
+        "feature_flags": {"context_reduction": false, "memory": true, "relevant_memory": true},
+        "max_new_tokens": 96
+      },
+      "reduced_config": {
+        "feature_flags": {"context_reduction": true, "memory": true, "relevant_memory": true},
+        "total_budget": 50000,
+        "section_budgets": {"prefix": 20000, "memory": 5000, "knowledge_context": 5000, "relevant_memory": 5000, "history": 20000},
+        "max_new_tokens": 96
+      }
+    },
+    {
+      "case_id": "long_history_budget_pressure",
+      "user_prompt": "Use the latest request and preserve the phrase long history pressure marker.",
+      "history": [
+        {"role": "user", "content": "Long history turn 01. alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha alpha."},
+        {"role": "assistant", "content": "Long history turn 02. beta beta beta beta beta beta beta beta beta beta beta beta beta beta beta beta beta beta beta beta beta beta beta beta beta beta."},
+        {"role": "user", "content": "Long history turn 03. gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma gamma."},
+        {"role": "assistant", "content": "Long history turn 04. delta delta delta delta delta delta delta delta delta delta delta delta delta delta delta delta delta delta delta delta delta."},
+        {"role": "user", "content": "Long history turn 05. epsilon epsilon epsilon epsilon epsilon epsilon epsilon epsilon epsilon epsilon epsilon epsilon epsilon epsilon epsilon epsilon."},
+        {"role": "assistant", "content": "Long history turn 06. zeta zeta zeta zeta zeta zeta zeta zeta zeta zeta zeta zeta zeta zeta zeta zeta zeta zeta."},
+        {"role": "user", "content": "Long history turn 07. eta eta eta eta eta eta eta eta eta eta eta eta eta eta eta eta eta eta eta eta eta eta eta."},
+        {"role": "assistant", "content": "Long history turn 08. theta theta theta theta theta theta theta theta theta theta theta theta theta theta theta theta theta theta."}
+      ],
+      "memory": {"notes": []},
+      "knowledge_items": [],
+      "tool_observations": [],
+      "mock_outputs": ["<final>Long history pressure marker preserved.</final>"],
+      "expected_final_keywords": ["Long history pressure marker"],
+      "current_request_must_contain": ["long history pressure marker"],
+      "max_steps": 2,
+      "baseline_config": {
+        "feature_flags": {"context_reduction": false, "memory": true, "relevant_memory": true},
+        "max_new_tokens": 96
+      },
+      "reduced_config": {
+        "feature_flags": {"context_reduction": true, "memory": true, "relevant_memory": true},
+        "total_budget": 1300,
+        "section_budgets": {"prefix": 220, "memory": 100, "knowledge_context": 90, "relevant_memory": 80, "history": 320},
+        "section_floors": {"prefix": 80, "memory": 40, "knowledge_context": 40, "relevant_memory": 40, "history": 100},
+        "max_new_tokens": 96
+      }
+    },
+    {
+      "case_id": "repeated_tool_outputs",
+      "user_prompt": "Avoid relying on repeated read noise and preserve repeated tool output marker.",
+      "tool_observations_before_history": true,
+      "history": [
+        {"role": "user", "content": "Recent note one: keep only the actionable part."},
+        {"role": "assistant", "content": "Recent note two: README was already inspected."},
+        {"role": "user", "content": "Recent note three: the target is sample.txt."},
+        {"role": "assistant", "content": "Recent note four: repeated reads are not useful."},
+        {"role": "user", "content": "Recent note five: finish with a concise answer."},
+        {"role": "assistant", "content": "Recent note six: no more duplicate reads."}
+      ],
+      "memory": {
+        "notes": [],
+        "file_summaries": {"sample.txt": "sample.txt contains alpha, beta, gamma, and placeholder lines."}
+      },
+      "knowledge_items": [],
+      "tool_observations": [
+        {"name": "read_file", "args": {"path": "sample.txt", "start": 1, "end": 4}, "result": "# sample.txt\n1: alpha\n2: beta\n3: gamma\n4: placeholder"},
+        {"name": "read_file", "args": {"path": "sample.txt", "start": 1, "end": 4}, "result": "# sample.txt\n1: alpha\n2: beta\n3: gamma\n4: placeholder"},
+        {"name": "read_file", "args": {"path": "sample.txt", "start": 1, "end": 4}, "result": "# sample.txt\n1: alpha\n2: beta\n3: gamma\n4: placeholder"}
+      ],
+      "workspace_files": {"README.md": "# Fixture\n", "sample.txt": "alpha\nbeta\ngamma\nplaceholder\n"},
+      "mock_outputs": ["<final>Repeated tool output marker handled.</final>"],
+      "expected_final_keywords": ["Repeated tool output marker"],
+      "current_request_must_contain": ["repeated tool output marker"],
+      "max_steps": 2,
+      "baseline_config": {
+        "feature_flags": {"context_reduction": false, "memory": true, "relevant_memory": true},
+        "max_new_tokens": 96
+      },
+      "reduced_config": {
+        "feature_flags": {"context_reduction": true, "memory": true, "relevant_memory": true},
+        "total_budget": 1400,
+        "section_budgets": {"prefix": 240, "memory": 120, "knowledge_context": 80, "relevant_memory": 80, "history": 360},
+        "section_floors": {"prefix": 80, "memory": 40, "knowledge_context": 30, "relevant_memory": 30, "history": 120},
+        "max_new_tokens": 96
+      }
+    },
+    {
+      "case_id": "knowledge_heavy_prompt",
+      "user_prompt": "Answer using project knowledge and preserve knowledge heavy marker.",
+      "history": [
+        {"role": "user", "content": "The project knowledge was indexed before this request."},
+        {"role": "assistant", "content": "The answer should mention only the benchmark marker."}
+      ],
+      "memory": {"notes": []},
+      "knowledge_items": [
+        "Knowledge block A. The context compression benchmark records prompt character counts and section-level rendering metadata for auditability. This sentence is intentionally long enough to create budget pressure in the knowledge section.",
+        "Knowledge block B. Pure uses deterministic fake embeddings in this benchmark so the run stays offline and reproducible without any provider key.",
+        "Knowledge block C. The current request must remain visible even if knowledge snippets are clipped by section budgets."
+      ],
+      "tool_observations": [],
+      "mock_outputs": ["<final>Knowledge heavy marker completed.</final>"],
+      "expected_final_keywords": ["Knowledge heavy marker"],
+      "current_request_must_contain": ["knowledge heavy marker"],
+      "max_steps": 2,
+      "baseline_config": {
+        "feature_flags": {"context_reduction": false, "memory": true, "relevant_memory": true},
+        "max_new_tokens": 96
+      },
+      "reduced_config": {
+        "feature_flags": {"context_reduction": true, "memory": true, "relevant_memory": true},
+        "total_budget": 1500,
+        "section_budgets": {"prefix": 260, "memory": 120, "knowledge_context": 160, "relevant_memory": 80, "history": 240},
+        "section_floors": {"prefix": 90, "memory": 40, "knowledge_context": 70, "relevant_memory": 30, "history": 80},
+        "max_new_tokens": 96
+      }
+    },
+    {
+      "case_id": "current_request_must_preserve",
+      "user_prompt": "Preserve this exact current request marker: CRITICAL-CURRENT-REQUEST-987. Do not drop the identifier even when the prompt is over budget.",
+      "history": [
+        {"role": "user", "content": "Old context A. noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise."},
+        {"role": "assistant", "content": "Old context B. noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise."},
+        {"role": "user", "content": "Old context C. noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise."},
+        {"role": "assistant", "content": "Old context D. noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise noise."}
+      ],
+      "memory": {
+        "notes": [
+          {"text": "CRITICAL-CURRENT-REQUEST-987 should be checked as a current request preservation marker.", "tags": ["critical", "current"]}
+        ]
+      },
+      "knowledge_items": [
+        "The benchmark must not treat high compression as success if CRITICAL-CURRENT-REQUEST-987 disappears from the prompt."
+      ],
+      "tool_observations": [],
+      "mock_outputs": ["<final>CRITICAL-CURRENT-REQUEST-987 preserved.</final>"],
+      "expected_final_keywords": ["CRITICAL-CURRENT-REQUEST-987"],
+      "current_request_must_contain": ["CRITICAL-CURRENT-REQUEST-987"],
+      "max_steps": 2,
+      "baseline_config": {
+        "feature_flags": {"context_reduction": false, "memory": true, "relevant_memory": true},
+        "max_new_tokens": 96
+      },
+      "reduced_config": {
+        "feature_flags": {"context_reduction": true, "memory": true, "relevant_memory": true},
+        "total_budget": 900,
+        "section_budgets": {"prefix": 120, "memory": 70, "knowledge_context": 60, "relevant_memory": 70, "history": 120},
+        "section_floors": {"prefix": 40, "memory": 25, "knowledge_context": 25, "relevant_memory": 25, "history": 40},
+        "max_new_tokens": 96
+      }
+    },
+    {
+      "case_id": "mixed_sections_pressure",
+      "user_prompt": "Resolve mixed section pressure and preserve mixed sections marker.",
+      "history": [
+        {"role": "user", "content": "Mixed history one. The user previously asked for architecture, checkpoint, gateway, and evaluator details in a single long request."},
+        {"role": "assistant", "content": "Mixed history two. The answer included runtime loop, trace report, checkpoint, resume, and tool audit information."},
+        {"role": "user", "content": "Mixed history three. The user then asked for benchmark evidence and section-by-section prompt length accounting."},
+        {"role": "assistant", "content": "Mixed history four. The response warned that character counts are not tokens and must not be overstated."}
+      ],
+      "memory": {
+        "notes": [
+          {"text": "mixed sections marker belongs to the current benchmark request", "tags": ["mixed", "sections"]},
+          {"text": "history and knowledge can both create budget pressure", "tags": ["mixed", "pressure"]}
+        ]
+      },
+      "knowledge_items": [
+        "Mixed pressure knowledge item. Prefix, memory, relevant memory, knowledge, and transcript sections may all contribute to prompt length.",
+        "Mixed pressure knowledge item two. The benchmark should report section-level deltas rather than only total prompt chars."
+      ],
+      "tool_observations": [
+        {"name": "search", "args": {"pattern": "ContextManager", "path": "pure"}, "result": "pure/core/context_manager.py: ContextManager builds prompt sections and metadata.\npure/services/prompt_service.py: PromptService adds runtime metadata."}
+      ],
+      "mock_outputs": ["<final>Mixed sections marker completed.</final>"],
+      "expected_final_keywords": ["Mixed sections marker"],
+      "current_request_must_contain": ["mixed sections marker"],
+      "max_steps": 2,
+      "baseline_config": {
+        "feature_flags": {"context_reduction": false, "memory": true, "relevant_memory": true},
+        "max_new_tokens": 96
+      },
+      "reduced_config": {
+        "feature_flags": {"context_reduction": true, "memory": true, "relevant_memory": true},
+        "total_budget": 1250,
+        "section_budgets": {"prefix": 180, "memory": 90, "knowledge_context": 130, "relevant_memory": 90, "history": 240},
+        "section_floors": {"prefix": 70, "memory": 30, "knowledge_context": 50, "relevant_memory": 30, "history": 80},
+        "max_new_tokens": 96
+      }
+    },
+    {
+      "case_id": "checkpoint_context_case",
+      "user_prompt": "Continue from checkpoint context and preserve checkpoint context marker.",
+      "history": [
+        {"role": "user", "content": "Previous run inspected sample.txt and stopped after creating a checkpoint."},
+        {"role": "assistant", "content": "Checkpoint summary should remain available but not dominate the current request."}
+      ],
+      "memory": {"notes": [{"text": "checkpoint context marker is part of the resume benchmark", "tags": ["checkpoint"]}]},
+      "knowledge_items": [],
+      "tool_observations": [],
+      "checkpoint": {
+        "checkpoint_id": "ckpt_context_case",
+        "current_goal": "Resume the context compression benchmark from a checkpoint.",
+        "completed": ["Read sample.txt", "Recorded section metadata"],
+        "current_blocker": "",
+        "next_step": "Check the current request before using older checkpoint details.",
+        "key_files": [{"path": "sample.txt", "freshness": null}],
+        "summary": "checkpoint context benchmark state"
+      },
+      "workspace_files": {"README.md": "# Fixture\n", "sample.txt": "alpha\nbeta\ngamma\n"},
+      "mock_outputs": ["<final>Checkpoint context marker completed.</final>"],
+      "expected_final_keywords": ["Checkpoint context marker"],
+      "current_request_must_contain": ["checkpoint context marker"],
+      "max_steps": 2,
+      "baseline_config": {
+        "feature_flags": {"context_reduction": false, "memory": true, "relevant_memory": true},
+        "max_new_tokens": 96
+      },
+      "reduced_config": {
+        "feature_flags": {"context_reduction": true, "memory": true, "relevant_memory": true},
+        "total_budget": 1150,
+        "section_budgets": {"prefix": 180, "memory": 80, "knowledge_context": 60, "relevant_memory": 70, "history": 180},
+        "section_floors": {"prefix": 70, "memory": 30, "knowledge_context": 25, "relevant_memory": 25, "history": 70},
+        "max_new_tokens": 96
+      }
+    },
+    {
+      "case_id": "tool_observation_heavy_case",
+      "user_prompt": "Use the latest shell observation safely and preserve tool observation marker.",
+      "history": [
+        {"role": "user", "content": "The previous step ran a diagnostic command with very noisy output."},
+        {"role": "assistant", "content": "Only the relevant summary should survive section pressure."}
+      ],
+      "memory": {"notes": []},
+      "knowledge_items": [],
+      "tool_observations": [
+        {"name": "run_shell", "args": {"command": "pytest -q", "timeout": 20}, "result": "FAIL test_context_a\nFAIL test_context_b\nFAIL test_context_c\nFAIL test_context_d\nstdout line 01 stdout line 02 stdout line 03 stdout line 04 stdout line 05 stdout line 06 stdout line 07 stdout line 08 stdout line 09 stdout line 10 stdout line 11 stdout line 12"}
+      ],
+      "mock_outputs": ["<final>Tool observation marker completed.</final>"],
+      "expected_final_keywords": ["Tool observation marker"],
+      "current_request_must_contain": ["tool observation marker"],
+      "max_steps": 2,
+      "baseline_config": {
+        "feature_flags": {"context_reduction": false, "memory": true, "relevant_memory": true},
+        "max_new_tokens": 96
+      },
+      "reduced_config": {
+        "feature_flags": {"context_reduction": true, "memory": true, "relevant_memory": true},
+        "total_budget": 1050,
+        "section_budgets": {"prefix": 160, "memory": 70, "knowledge_context": 50, "relevant_memory": 50, "history": 160},
+        "section_floors": {"prefix": 60, "memory": 25, "knowledge_context": 20, "relevant_memory": 20, "history": 60},
+        "max_new_tokens": 96
+      }
+    },
+    {
+      "case_id": "final_answer_case",
+      "user_prompt": "Finish normally and preserve final answer marker.",
+      "history": [
+        {"role": "user", "content": "A short setup exists before the final response."}
+      ],
+      "memory": {"notes": [{"text": "final answer marker should be present in the final response", "tags": ["final"]}]},
+      "knowledge_items": [],
+      "tool_observations": [],
+      "mock_outputs": ["<final>Final answer marker completed normally.</final>"],
+      "expected_final_keywords": ["Final answer marker"],
+      "current_request_must_contain": ["final answer marker"],
+      "max_steps": 2,
+      "baseline_config": {
+        "feature_flags": {"context_reduction": false, "memory": true, "relevant_memory": true},
+        "max_new_tokens": 96
+      },
+      "reduced_config": {
+        "feature_flags": {"context_reduction": true, "memory": true, "relevant_memory": true},
+        "total_budget": 5000,
+        "section_budgets": {"prefix": 1200, "memory": 400, "knowledge_context": 300, "relevant_memory": 300, "history": 900},
+        "max_new_tokens": 96
+      }
+    },
+    {
+      "case_id": "malformed_then_retry_case",
+      "user_prompt": "Recover after malformed output and preserve retry recovery marker.",
+      "history": [
+        {"role": "user", "content": "The model may first return a malformed response."},
+        {"role": "assistant", "content": "The runtime should retry and still build prompt metadata."}
+      ],
+      "memory": {"notes": [{"text": "retry recovery marker should survive across attempts", "tags": ["retry"]}]},
+      "knowledge_items": [],
+      "tool_observations": [],
+      "mock_outputs": ["", "<final>Retry recovery marker completed.</final>"],
+      "expected_final_keywords": ["Retry recovery marker"],
+      "current_request_must_contain": ["retry recovery marker"],
+      "max_steps": 2,
+      "baseline_config": {
+        "feature_flags": {"context_reduction": false, "memory": true, "relevant_memory": true},
+        "max_new_tokens": 96
+      },
+      "reduced_config": {
+        "feature_flags": {"context_reduction": true, "memory": true, "relevant_memory": true},
+        "total_budget": 1500,
+        "section_budgets": {"prefix": 220, "memory": 100, "knowledge_context": 70, "relevant_memory": 90, "history": 260},
+        "section_floors": {"prefix": 80, "memory": 35, "knowledge_context": 25, "relevant_memory": 30, "history": 90},
+        "max_new_tokens": 96
+      }
+    },
+    {
+      "case_id": "no_compression_expected_case",
+      "user_prompt": "Keep a tiny prompt and preserve no compression expected marker.",
+      "history": [
+        {"role": "user", "content": "Tiny history."}
+      ],
+      "memory": {"notes": []},
+      "knowledge_items": [],
+      "tool_observations": [],
+      "mock_outputs": ["<final>No compression expected marker completed.</final>"],
+      "expected_final_keywords": ["No compression expected marker"],
+      "current_request_must_contain": ["no compression expected marker"],
+      "max_steps": 2,
+      "baseline_config": {
+        "feature_flags": {"context_reduction": false, "memory": true, "relevant_memory": true},
+        "max_new_tokens": 96
+      },
+      "reduced_config": {
+        "feature_flags": {"context_reduction": true, "memory": true, "relevant_memory": true},
+        "total_budget": 50000,
+        "section_budgets": {"prefix": 20000, "memory": 5000, "knowledge_context": 5000, "relevant_memory": 5000, "history": 20000},
+        "max_new_tokens": 96
+      }
+    },
+    {
+      "case_id": "negative_compression_allowed_case",
+      "user_prompt": "Use relevant memory and preserve negative compression marker.",
+      "history": [
+        {"role": "user", "content": "Small baseline context."}
+      ],
+      "memory": {
+        "notes": [
+          {"text": "negative compression marker relevant memory note adds useful context in the reduced variant", "tags": ["negative", "compression"]}
+        ]
+      },
+      "knowledge_items": [],
+      "tool_observations": [],
+      "mock_outputs": ["<final>Negative compression marker completed.</final>"],
+      "expected_final_keywords": ["Negative compression marker"],
+      "current_request_must_contain": ["negative compression marker"],
+      "max_steps": 2,
+      "baseline_config": {
+        "feature_flags": {"context_reduction": false, "memory": true, "relevant_memory": false},
+        "max_new_tokens": 96
+      },
+      "reduced_config": {
+        "feature_flags": {"context_reduction": true, "memory": true, "relevant_memory": true},
+        "total_budget": 50000,
+        "section_budgets": {"prefix": 20000, "memory": 5000, "knowledge_context": 5000, "relevant_memory": 5000, "history": 20000},
+        "max_new_tokens": 96
+      }
+    }
+  ]
+}

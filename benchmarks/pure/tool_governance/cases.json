@@ -1,0 +1,243 @@
+{
+  "cases": [
+    {
+      "case_id": "safe_read_allowed",
+      "category": "safe_tools",
+      "tool_name": "read_file",
+      "arguments": {
+        "path": "README.md"
+      },
+      "approval_mode": "readonly",
+      "expected_allowed": true,
+      "expected_error_code": "",
+      "expected_security_event": "",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "Readonly mode should allow non-mutating file reads inside the fixture workspace."
+    },
+    {
+      "case_id": "safe_list_allowed",
+      "category": "safe_tools",
+      "tool_name": "list_files",
+      "arguments": {
+        "path": "."
+      },
+      "approval_mode": "readonly",
+      "expected_allowed": true,
+      "expected_error_code": "",
+      "expected_security_event": "",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "Readonly mode should allow directory listing inside the fixture workspace."
+    },
+    {
+      "case_id": "safe_search_allowed",
+      "category": "safe_tools",
+      "tool_name": "search",
+      "arguments": {
+        "pattern": "PureRuntime",
+        "path": "."
+      },
+      "approval_mode": "readonly",
+      "expected_allowed": true,
+      "expected_error_code": "",
+      "expected_security_event": "",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "Readonly mode should allow search against fixture files."
+    },
+    {
+      "case_id": "readonly_blocks_write",
+      "category": "approval_policy",
+      "tool_name": "write_file",
+      "arguments": {
+        "path": "tmp.txt",
+        "content": "readonly should block this write\n"
+      },
+      "approval_mode": "readonly",
+      "expected_allowed": false,
+      "expected_error_code": "readonly_block",
+      "expected_security_event": "read_only_block",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "Readonly mode should reject write_file even when arguments are valid."
+    },
+    {
+      "case_id": "readonly_blocks_patch",
+      "category": "approval_policy",
+      "tool_name": "patch_file",
+      "arguments": {
+        "path": "tmp.txt",
+        "old_text": "before",
+        "new_text": "after"
+      },
+      "approval_mode": "readonly",
+      "expected_allowed": false,
+      "expected_error_code": "readonly_block",
+      "expected_security_event": "read_only_block",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "Readonly mode should reject patch_file after normal argument validation succeeds."
+    },
+    {
+      "case_id": "readonly_blocks_shell",
+      "category": "approval_policy",
+      "tool_name": "run_shell",
+      "arguments": {
+        "command": "echo hello",
+        "timeout": 5
+      },
+      "approval_mode": "readonly",
+      "expected_allowed": false,
+      "expected_error_code": "readonly_block",
+      "expected_security_event": "read_only_block",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "Readonly mode should reject shell execution before the command runs."
+    },
+    {
+      "case_id": "workspace_escape_read_parent",
+      "category": "workspace_escape",
+      "tool_name": "read_file",
+      "arguments": {
+        "path": "../../secret.txt"
+      },
+      "approval_mode": "readonly",
+      "expected_allowed": false,
+      "expected_error_code": "invalid_arguments",
+      "expected_security_event": "path_escape",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "Parent path traversal should be rejected by workspace boundary validation."
+    },
+    {
+      "case_id": "workspace_escape_write_parent",
+      "category": "workspace_escape",
+      "tool_name": "write_file",
+      "arguments": {
+        "path": "../outside.txt",
+        "content": "outside write should be rejected\n"
+      },
+      "approval_mode": "auto",
+      "expected_allowed": false,
+      "expected_error_code": "invalid_arguments",
+      "expected_security_event": "path_escape",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "Risky writes should still fail argument validation when the path escapes the fixture workspace."
+    },
+    {
+      "case_id": "workspace_escape_absolute_path",
+      "category": "workspace_escape",
+      "tool_name": "read_file",
+      "arguments": {
+        "path": "{outside_absolute_path}"
+      },
+      "approval_mode": "readonly",
+      "expected_allowed": false,
+      "expected_error_code": "invalid_arguments",
+      "expected_security_event": "path_escape",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "The runner replaces the placeholder with an absolute fixture path outside the case workspace."
+    },
+    {
+      "case_id": "invalid_tool_name",
+      "category": "invalid_args",
+      "tool_name": "missing_tool_for_benchmark",
+      "arguments": {
+        "path": "README.md"
+      },
+      "approval_mode": "readonly",
+      "expected_allowed": false,
+      "expected_error_code": "unknown_tool",
+      "expected_security_event": "",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "Unknown tools should be rejected before argument or approval checks."
+    },
+    {
+      "case_id": "missing_required_arg",
+      "category": "invalid_args",
+      "tool_name": "read_file",
+      "arguments": {},
+      "approval_mode": "readonly",
+      "expected_allowed": false,
+      "expected_error_code": "invalid_arguments",
+      "expected_security_event": "",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "read_file without path should fail schema and argument validation."
+    },
+    {
+      "case_id": "wrong_arg_type",
+      "category": "invalid_args",
+      "tool_name": "read_file",
+      "arguments": {
+        "path": [
+          "README.md"
+        ]
+      },
+      "approval_mode": "readonly",
+      "expected_allowed": false,
+      "expected_error_code": "invalid_arguments",
+      "expected_security_event": "",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "A list value for path should fail argument validation."
+    },
+    {
+      "case_id": "risky_write_audit_diff",
+      "category": "audit_diff",
+      "tool_name": "write_file",
+      "arguments": {
+        "path": "created.txt",
+        "content": "created by the tool governance benchmark\n"
+      },
+      "approval_mode": "auto",
+      "expected_allowed": true,
+      "expected_error_code": "",
+      "expected_security_event": "",
+      "expected_workspace_changed": true,
+      "expected_affected_paths": [
+        "created.txt"
+      ],
+      "notes": "Allowed write_file should record workspace_changed and the created path."
+    },
+    {
+      "case_id": "risky_patch_audit_diff",
+      "category": "audit_diff",
+      "tool_name": "patch_file",
+      "arguments": {
+        "path": "patch_target.txt",
+        "old_text": "before",
+        "new_text": "after"
+      },
+      "approval_mode": "auto",
+      "expected_allowed": true,
+      "expected_error_code": "",
+      "expected_security_event": "",
+      "expected_workspace_changed": true,
+      "expected_affected_paths": [
+        "patch_target.txt"
+      ],
+      "notes": "Allowed patch_file should report a modified fixture path."
+    },
+    {
+      "case_id": "shell_no_workspace_change",
+      "category": "audit_diff",
+      "tool_name": "run_shell",
+      "arguments": {
+        "command": "echo hello",
+        "timeout": 5
+      },
+      "approval_mode": "auto",
+      "expected_allowed": true,
+      "expected_error_code": "",
+      "expected_security_event": "",
+      "expected_workspace_changed": false,
+      "expected_affected_paths": [],
+      "notes": "A safe echo command should execute without producing a workspace diff."
+    }
+  ]
+}

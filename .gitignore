@@ -35,6 +35,17 @@ tmp/
 .pure/
 artifacts/
 readme_intro_locked/
+benchmarks/pure/context_compression/workspaces/
+benchmarks/pure/context_compression/.tmp/
+benchmarks/pure/tool_governance/workspaces/
+benchmarks/pure/tool_governance/.tmp/
+benchmarks/pure/checkpoint_resume/workspaces/
+benchmarks/pure/checkpoint_resume/.tmp/
+benchmarks/pure/tool_loop/workspaces/
+benchmarks/pure/tool_loop/.tmp/
+benchmarks/pure/evaluator_regression/workspaces/
+benchmarks/pure/evaluator_regression/.tmp/
+benchmarks/pure/_runs/
 
 # Local secrets and provider configuration
 .env

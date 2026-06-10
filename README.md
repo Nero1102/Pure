@@ -205,6 +205,30 @@ Open Swagger UI at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
 ---
 
+## Benchmarks
+
+Pure includes offline benchmarks for context compression, tool loop / repetition guard behavior, ToolGateway governance, checkpoint / resume validation, and evaluator regression.
+
+Run the full benchmark suite:
+
+```bash
+python scripts/run_pure_benchmarks.py --all --output benchmarks/pure/_runs/latest
+```
+
+Run one suite:
+
+```bash
+python scripts/run_pure_benchmarks.py --suite tool_loop --output benchmarks/pure/_runs/tool_loop
+```
+
+Benchmark documentation and latest results:
+- [Benchmark design](docs/benchmarks/pure-benchmark-design.md)
+- [Benchmark results](docs/benchmarks/pure-benchmark-results.md)
+
+Generated artifacts are written under `benchmarks/pure/_runs/`. The README intentionally keeps numbers out of the front page; use the results document for the latest measured values. These benchmarks use `FakeModelClient` and mock outputs to verify runtime behavior. They do not represent real model capability, SWE-bench performance, or production-grade security.
+
+---
+
 ## CLI Demo
 
 Dry-run (no real model, deterministic FakeModelClient):

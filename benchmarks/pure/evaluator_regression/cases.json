@@ -1,0 +1,226 @@
+{
+  "cases": [
+    {
+      "case_id": "smoke_final_answer",
+      "prompt": "Return a direct final answer for the evaluator regression smoke case.",
+      "mock_outputs": [
+        "<final>Smoke final answer completed in dry-run/mock mode.</final>"
+      ],
+      "expected_tools": [],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        {
+          "event_type": "checkpoint_created",
+          "payload": {
+            "trigger": "run_finished"
+          }
+        },
+        "run_completed"
+      ],
+      "success_keywords": [
+        "Smoke final answer",
+        "dry-run/mock"
+      ],
+      "max_steps": 2,
+      "runtime_config": {},
+      "expected_failure_reasons": [],
+      "notes": "Direct final-answer smoke case for evaluator regression."
+    },
+    {
+      "case_id": "forbidden_tool_guard_violation",
+      "prompt": "Try a forbidden shell tool so the evaluator records the policy violation.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"run_shell\",\"args\":{\"command\":\"echo evaluator-forbidden-tool\",\"timeout\":5}}</tool>",
+        "<final>Forbidden tool violation was recorded in dry-run/mock mode.</final>"
+      ],
+      "expected_tools": [
+        "run_shell"
+      ],
+      "forbidden_tools": [
+        "run_shell"
+      ],
+      "expected_trace_events": [
+        "run_started",
+        {
+          "event_type": "tool_executed",
+          "payload": {
+            "name": "run_shell",
+            "tool_status": "ok"
+          }
+        },
+        "run_completed"
+      ],
+      "success_keywords": [
+        "Forbidden tool violation",
+        "dry-run/mock"
+      ],
+      "max_steps": 3,
+      "runtime_config": {},
+      "expected_failure_reasons": [
+        "forbidden tools used: run_shell"
+      ],
+      "notes": "Negative evaluator case: the safe echo command is intentionally forbidden, so the case should record a violation."
+    },
+    {
+      "case_id": "repeated_tool_call_warn",
+      "prompt": "Repeat the same list_files call so warn mode emits a repetition event.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<final>Repeated tool warn event observed in dry-run/mock mode.</final>"
+      ],
+      "expected_tools": [
+        "list_files"
+      ],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "expected_trace_events": [
+        "run_started",
+        "repeated_tool_call_detected",
+        "run_completed"
+      ],
+      "success_keywords": [
+        "Repeated tool warn",
+        "dry-run/mock"
+      ],
+      "max_steps": 4,
+      "runtime_config": {
+        "tool_repetition_guard": {
+          "enabled": true,
+          "mode": "warn",
+          "window": 5
+        }
+      },
+      "expected_failure_reasons": [],
+      "notes": "Warn mode should continue execution while recording repeated_tool_call_detected."
+    },
+    {
+      "case_id": "repeated_tool_call_block",
+      "prompt": "Repeat the same list_files call so block mode rejects the duplicate.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<final>Repeated tool block event observed in dry-run/mock mode.</final>"
+      ],
+      "expected_tools": [
+        "list_files"
+      ],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "expected_trace_events": [
+        "run_started",
+        "tool_rejected_repeated_call",
+        {
+          "event_type": "tool_executed",
+          "payload": {
+            "name": "list_files",
+            "tool_status": "rejected",
+            "tool_error_code": "repeated_tool_call"
+          }
+        },
+        "run_completed"
+      ],
+      "success_keywords": [
+        "Repeated tool block",
+        "dry-run/mock"
+      ],
+      "max_steps": 4,
+      "runtime_config": {
+        "tool_repetition_guard": {
+          "enabled": true,
+          "mode": "block",
+          "window": 5
+        }
+      },
+      "expected_failure_reasons": [],
+      "notes": "Block mode should record tool_rejected_repeated_call and a rejected tool_executed payload."
+    },
+    {
+      "case_id": "security_event_case",
+      "prompt": "Attempt to read outside the fixture workspace and verify the security event is recorded.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"read_file\",\"args\":{\"path\":\"../../secret.txt\"}}</tool>",
+        "<final>Security event path escape was recorded in dry-run/mock mode.</final>"
+      ],
+      "expected_tools": [
+        "read_file"
+      ],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "expected_trace_events": [
+        "run_started",
+        {
+          "event_type": "tool_executed",
+          "payload": {
+            "name": "read_file",
+            "tool_status": "rejected",
+            "tool_error_code": "invalid_arguments",
+            "security_event_type": "path_escape"
+          }
+        },
+        "run_completed"
+      ],
+      "success_keywords": [
+        "Security event",
+        "dry-run/mock"
+      ],
+      "max_steps": 3,
+      "runtime_config": {},
+      "expected_failure_reasons": [],
+      "notes": "Workspace escape should be rejected and counted as a security event."
+    },
+    {
+      "case_id": "step_budget_case",
+      "prompt": "Use more tool calls than the runtime step budget allows.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<tool>{\"name\":\"read_file\",\"args\":{\"path\":\"README.md\",\"start\":1,\"end\":5}}</tool>",
+        "<final>This final should not be reached.</final>"
+      ],
+      "expected_tools": [
+        "list_files"
+      ],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "expected_trace_events": [
+        "run_started",
+        {
+          "event_type": "checkpoint_created",
+          "payload": {
+            "trigger": "step_limit_reached"
+          }
+        },
+        "run_completed"
+      ],
+      "success_keywords": [
+        "Stopped after reaching"
+      ],
+      "max_steps": 1,
+      "runtime_config": {},
+      "expected_failure_reasons": [
+        "run status was not completed"
+      ],
+      "notes": "Negative evaluator case: runtime should stop at the step limit and preserve the failure reason."
+    }
+  ]
+}

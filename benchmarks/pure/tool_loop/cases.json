@@ -1,0 +1,245 @@
+{
+  "cases": [
+    {
+      "case_id": "repeated_list_files_same_path",
+      "description": "The model calls list_files('pure') twice in a row.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<final>Done repeated list files.</final>"
+      ],
+      "max_steps": 3,
+      "expected_repeated_count": 1,
+      "expected_blocked_count_in_block_mode": 1,
+      "expected_trace_events": [
+        "repeated_tool_call_detected",
+        "tool_rejected_repeated_call"
+      ],
+      "expected_final_keywords": [
+        "Done"
+      ],
+      "notes": "Baseline same-tool same-args repetition."
+    },
+    {
+      "case_id": "repeated_list_files_windows_path",
+      "description": "The model calls list_files('pure') and then list_files('.\\\\pure').",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\".\\\\pure\"}}</tool>",
+        "<final>Done windows path normalization.</final>"
+      ],
+      "max_steps": 3,
+      "expected_repeated_count": 1,
+      "expected_blocked_count_in_block_mode": 1,
+      "expected_trace_events": [
+        "repeated_tool_call_detected",
+        "tool_rejected_repeated_call"
+      ],
+      "expected_final_keywords": [
+        "Done"
+      ],
+      "notes": "Windows-style path text should normalize to the same relative path."
+    },
+    {
+      "case_id": "repeated_list_files_slash_path",
+      "description": "The model calls list_files('pure/') and then list_files('pure').",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure/\"}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<final>Done slash path normalization.</final>"
+      ],
+      "max_steps": 3,
+      "expected_repeated_count": 1,
+      "expected_blocked_count_in_block_mode": 1,
+      "expected_trace_events": [
+        "repeated_tool_call_detected",
+        "tool_rejected_repeated_call"
+      ],
+      "expected_final_keywords": [
+        "Done"
+      ],
+      "notes": "Trailing slash path text should normalize to the same relative path."
+    },
+    {
+      "case_id": "repeated_read_file_same_file",
+      "description": "The model reads README.md twice.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"read_file\",\"args\":{\"path\":\"README.md\",\"start\":1,\"end\":20}}</tool>",
+        "<tool>{\"name\":\"read_file\",\"args\":{\"path\":\"README.md\",\"start\":1,\"end\":20}}</tool>",
+        "<final>Done repeated read file.</final>"
+      ],
+      "max_steps": 3,
+      "expected_repeated_count": 1,
+      "expected_blocked_count_in_block_mode": 1,
+      "expected_trace_events": [
+        "repeated_tool_call_detected",
+        "tool_rejected_repeated_call"
+      ],
+      "expected_final_keywords": [
+        "Done"
+      ],
+      "notes": "Repeated reads are detected when tool name and normalized args match."
+    },
+    {
+      "case_id": "different_args_not_repeated",
+      "description": "The model lists two different directories.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"docs\"}}</tool>",
+        "<final>Done different args.</final>"
+      ],
+      "max_steps": 3,
+      "expected_repeated_count": 0,
+      "expected_blocked_count_in_block_mode": 0,
+      "expected_trace_events": [],
+      "expected_final_keywords": [
+        "Done"
+      ],
+      "notes": "Different normalized path args should not count as repetition."
+    },
+    {
+      "case_id": "ignored_non_semantic_args",
+      "description": "The model changes display_limit but keeps the same semantic path.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\",\"display_limit\":10}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"display_limit\":20,\"path\":\"pure\"}}</tool>",
+        "<final>Done non semantic args.</final>"
+      ],
+      "max_steps": 3,
+      "expected_repeated_count": 1,
+      "expected_blocked_count_in_block_mode": 1,
+      "expected_trace_events": [
+        "repeated_tool_call_detected",
+        "tool_rejected_repeated_call"
+      ],
+      "expected_final_keywords": [
+        "Done"
+      ],
+      "notes": "display_limit is intentionally ignored in normalized args."
+    },
+    {
+      "case_id": "window_expiry_allows_repeat",
+      "description": "The model repeats list_files('pure') after more than five intervening tool steps.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"docs\"}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure/core\"}}</tool>",
+        "<tool>{\"name\":\"read_file\",\"args\":{\"path\":\"README.md\",\"start\":1,\"end\":5}}</tool>",
+        "<tool>{\"name\":\"search\",\"args\":{\"pattern\":\"PureRuntime\",\"path\":\"README.md\"}}</tool>",
+        "<tool>{\"name\":\"read_file\",\"args\":{\"path\":\"notes.txt\",\"start\":1,\"end\":5}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<final>Done window expiry.</final>"
+      ],
+      "max_steps": 8,
+      "expected_repeated_count": 0,
+      "expected_blocked_count_in_block_mode": 0,
+      "expected_trace_events": [],
+      "expected_final_keywords": [
+        "Done"
+      ],
+      "notes": "With a window of five, the original call is outside the tracked window by the time it repeats."
+    },
+    {
+      "case_id": "warn_mode_continues_execution",
+      "description": "Warn mode should emit a warning while still running the duplicate handler.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<final>Done warn mode continues.</final>"
+      ],
+      "max_steps": 3,
+      "expected_repeated_count": 1,
+      "expected_blocked_count_in_block_mode": 1,
+      "expected_trace_events": [
+        "repeated_tool_call_detected",
+        "tool_rejected_repeated_call"
+      ],
+      "expected_final_keywords": [
+        "Done"
+      ],
+      "notes": "Warn mode is advisory and should not reduce executed duplicate calls."
+    },
+    {
+      "case_id": "block_mode_rejects_execution",
+      "description": "Block mode should reject the duplicate call without invoking the tool handler.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<final>Done block mode rejects.</final>"
+      ],
+      "max_steps": 3,
+      "expected_repeated_count": 1,
+      "expected_blocked_count_in_block_mode": 1,
+      "expected_trace_events": [
+        "repeated_tool_call_detected",
+        "tool_rejected_repeated_call"
+      ],
+      "expected_final_keywords": [
+        "Done"
+      ],
+      "notes": "Block mode still records the attempted repeat in trace but avoids executing it."
+    },
+    {
+      "case_id": "write_tool_resets_window",
+      "description": "A mutating tool clears recent calls before a later same read/explore action.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<tool>{\"name\":\"write_file\",\"args\":{\"path\":\"generated.txt\",\"content\":\"changed by benchmark\\n\"}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<final>Done write reset.</final>"
+      ],
+      "max_steps": 4,
+      "expected_repeated_count": 0,
+      "expected_blocked_count_in_block_mode": 0,
+      "expected_trace_events": [],
+      "expected_final_keywords": [
+        "Done"
+      ],
+      "notes": "write_file is treated as workspace-mutating and clears the short repetition window."
+    },
+    {
+      "case_id": "repeated_search_query",
+      "description": "The model repeats the same search query.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"search\",\"args\":{\"pattern\":\"PureRuntime\",\"path\":\".\"}}</tool>",
+        "<tool>{\"name\":\"search\",\"args\":{\"pattern\":\"PureRuntime\",\"path\":\".\"}}</tool>",
+        "<final>Done repeated search.</final>"
+      ],
+      "max_steps": 3,
+      "expected_repeated_count": 1,
+      "expected_blocked_count_in_block_mode": 1,
+      "expected_trace_events": [
+        "repeated_tool_call_detected",
+        "tool_rejected_repeated_call"
+      ],
+      "expected_final_keywords": [
+        "Done"
+      ],
+      "notes": "Search repeats are detected by tool name plus normalized args."
+    },
+    {
+      "case_id": "mixed_tool_sequence",
+      "description": "Multiple tool types are interleaved; only same-tool same-args repeats should count.",
+      "mock_outputs": [
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<tool>{\"name\":\"read_file\",\"args\":{\"path\":\"README.md\",\"start\":1,\"end\":5}}</tool>",
+        "<tool>{\"name\":\"list_files\",\"args\":{\"path\":\"pure\"}}</tool>",
+        "<tool>{\"name\":\"search\",\"args\":{\"pattern\":\"PureRuntime\",\"path\":\".\"}}</tool>",
+        "<tool>{\"name\":\"search\",\"args\":{\"path\":\".\",\"pattern\":\"PureRuntime\"}}</tool>",
+        "<tool>{\"name\":\"read_file\",\"args\":{\"path\":\"notes.txt\",\"start\":1,\"end\":5}}</tool>",
+        "<final>Done mixed tool sequence.</final>"
+      ],
+      "max_steps": 7,
+      "expected_repeated_count": 2,
+      "expected_blocked_count_in_block_mode": 2,
+      "expected_trace_events": [
+        "repeated_tool_call_detected",
+        "tool_rejected_repeated_call"
+      ],
+      "expected_final_keywords": [
+        "Done"
+      ],
+      "notes": "The repeated list_files and repeated search calls should be counted; other tool calls should not."
+    }
+  ]
+}

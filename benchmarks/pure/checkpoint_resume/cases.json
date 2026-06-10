@@ -1,0 +1,295 @@
+{
+  "cases": [
+    {
+      "case_id": "clean_resume",
+      "category": "clean",
+      "setup_actions": [
+        {
+          "action": "create_checkpoint"
+        }
+      ],
+      "mutation_actions": [],
+      "runtime_config": {
+        "mock_outputs": [
+          "<final>Clean resume completed.</final>"
+        ]
+      },
+      "expected_resume_status": "full-valid",
+      "expected_checkpoint_trigger": "run_finished",
+      "expected_trace_events": [
+        "checkpoint_created"
+      ],
+      "expected_allowed_to_continue": true,
+      "notes": "A checkpoint created in an unchanged fixture workspace should resume as full-valid."
+    },
+    {
+      "case_id": "partial_stale_single_file_change",
+      "category": "partial_stale",
+      "setup_actions": [
+        {
+          "action": "create_checkpoint",
+          "read_key_files": [
+            "runtime.py"
+          ]
+        }
+      ],
+      "mutation_actions": [
+        {
+          "action": "modify_file",
+          "path": "runtime.py",
+          "content": "def answer():\n    return 'beta'\n"
+        }
+      ],
+      "runtime_config": {
+        "mock_outputs": [
+          "<final>Partial stale resume completed.</final>"
+        ]
+      },
+      "expected_resume_status": "partial-stale",
+      "expected_checkpoint_trigger": "freshness_mismatch",
+      "expected_trace_events": [
+        "checkpoint_created"
+      ],
+      "expected_allowed_to_continue": true,
+      "notes": "A changed key file should be detected through checkpoint key_files freshness."
+    },
+    {
+      "case_id": "workspace_mismatch_many_files",
+      "category": "workspace_mismatch",
+      "setup_actions": [
+        {
+          "action": "create_checkpoint"
+        }
+      ],
+      "mutation_actions": [
+        {
+          "action": "modify_many_files",
+          "count": 8
+        }
+      ],
+      "runtime_config": {
+        "mock_outputs": [
+          "<final>Workspace mismatch resume completed.</final>"
+        ]
+      },
+      "expected_resume_status": "workspace-mismatch",
+      "expected_checkpoint_trigger": "workspace_mismatch",
+      "expected_trace_events": [
+        "runtime_identity_mismatch",
+        "checkpoint_created"
+      ],
+      "expected_allowed_to_continue": true,
+      "notes": "Broad workspace changes should alter the workspace fingerprint and be recorded as workspace-mismatch."
+    },
+    {
+      "case_id": "workspace_mismatch_repo_root_changed",
+      "category": "workspace_mismatch",
+      "setup_actions": [
+        {
+          "action": "create_checkpoint"
+        }
+      ],
+      "mutation_actions": [
+        {
+          "action": "change_repo_root"
+        }
+      ],
+      "runtime_config": {
+        "mock_outputs": [
+          "<final>Moved workspace resume completed.</final>"
+        ]
+      },
+      "expected_resume_status": "workspace-mismatch",
+      "expected_checkpoint_trigger": "workspace_mismatch",
+      "expected_trace_events": [
+        "runtime_identity_mismatch",
+        "checkpoint_created"
+      ],
+      "expected_allowed_to_continue": true,
+      "notes": "Loading the same checkpoint session against another fixture root should mismatch cwd/workspace identity."
+    },
+    {
+      "case_id": "schema_mismatch",
+      "category": "schema_mismatch",
+      "setup_actions": [
+        {
+          "action": "create_checkpoint"
+        }
+      ],
+      "mutation_actions": [
+        {
+          "action": "set_checkpoint_schema",
+          "schema_version": "legacy-v0"
+        }
+      ],
+      "runtime_config": {
+        "mock_outputs": [
+          "<final>Schema mismatch was observed.</final>"
+        ]
+      },
+      "expected_resume_status": "schema-mismatch",
+      "expected_checkpoint_trigger": "run_finished",
+      "expected_trace_events": [
+        "checkpoint_created"
+      ],
+      "expected_allowed_to_continue": true,
+      "notes": "Current runtime marks schema mismatch in prompt metadata and still completes the offline scripted run."
+    },
+    {
+      "case_id": "runtime_identity_model_changed",
+      "category": "runtime_identity",
+      "setup_actions": [
+        {
+          "action": "create_checkpoint"
+        }
+      ],
+      "mutation_actions": [
+        {
+          "action": "set_runtime_identity",
+          "key": "model",
+          "value": "old-model-for-benchmark"
+        }
+      ],
+      "runtime_config": {
+        "mock_outputs": [
+          "<final>Model identity mismatch was observed.</final>"
+        ]
+      },
+      "expected_resume_status": "workspace-mismatch",
+      "expected_checkpoint_trigger": "workspace_mismatch",
+      "expected_trace_events": [
+        "runtime_identity_mismatch",
+        "checkpoint_created"
+      ],
+      "expected_allowed_to_continue": true,
+      "notes": "Changing the saved model identity should surface as runtime identity mismatch."
+    },
+    {
+      "case_id": "runtime_identity_approval_changed",
+      "category": "runtime_identity",
+      "setup_actions": [
+        {
+          "action": "create_checkpoint"
+        }
+      ],
+      "mutation_actions": [],
+      "runtime_config": {
+        "approval_policy": "never",
+        "mock_outputs": [
+          "<final>Approval identity mismatch was observed.</final>"
+        ]
+      },
+      "expected_resume_status": "workspace-mismatch",
+      "expected_checkpoint_trigger": "workspace_mismatch",
+      "expected_trace_events": [
+        "runtime_identity_mismatch",
+        "checkpoint_created"
+      ],
+      "expected_allowed_to_continue": true,
+      "notes": "Resuming with a different approval policy should be recorded in runtime_identity_mismatch_fields."
+    },
+    {
+      "case_id": "tool_signature_changed",
+      "category": "runtime_identity",
+      "setup_actions": [
+        {
+          "action": "create_checkpoint"
+        }
+      ],
+      "mutation_actions": [
+        {
+          "action": "set_runtime_identity",
+          "key": "tool_signature",
+          "value": "outdated-tool-signature"
+        }
+      ],
+      "runtime_config": {
+        "mock_outputs": [
+          "<final>Tool signature mismatch was observed.</final>"
+        ]
+      },
+      "expected_resume_status": "workspace-mismatch",
+      "expected_checkpoint_trigger": "workspace_mismatch",
+      "expected_trace_events": [
+        "runtime_identity_mismatch",
+        "checkpoint_created"
+      ],
+      "expected_allowed_to_continue": true,
+      "notes": "Changing the saved tool signature simulates a tool-list/signature drift."
+    },
+    {
+      "case_id": "context_reduction_checkpoint",
+      "category": "context_reduction",
+      "setup_actions": [
+        {
+          "action": "create_checkpoint"
+        }
+      ],
+      "mutation_actions": [
+        {
+          "action": "append_long_history",
+          "entries": 14,
+          "chars_per_entry": 320
+        }
+      ],
+      "runtime_config": {
+        "mock_outputs": [
+          "<final>Context reduction checkpoint was created.</final>"
+        ],
+        "context_config": {
+          "total_budget": 900,
+          "section_budgets": {
+            "prefix": 1200,
+            "memory": 400,
+            "knowledge_context": 300,
+            "relevant_memory": 300,
+            "history": 2600
+          },
+          "section_floors": {
+            "prefix": 80,
+            "memory": 60,
+            "knowledge_context": 60,
+            "relevant_memory": 60,
+            "history": 80
+          }
+        }
+      },
+      "expected_resume_status": "full-valid",
+      "expected_checkpoint_trigger": "context_reduction",
+      "expected_trace_events": [
+        "checkpoint_created"
+      ],
+      "expected_allowed_to_continue": true,
+      "notes": "A long offline history with tight context budgets should trigger a context_reduction checkpoint."
+    },
+    {
+      "case_id": "workspace_mismatch_checkpoint_created",
+      "category": "workspace_mismatch",
+      "setup_actions": [
+        {
+          "action": "create_checkpoint"
+        }
+      ],
+      "mutation_actions": [
+        {
+          "action": "modify_file",
+          "path": "README.md",
+          "content": "# Changed Fixture\n\nWorkspace mismatch checkpoint creation should be traced.\n"
+        }
+      ],
+      "runtime_config": {
+        "mock_outputs": [
+          "<final>Workspace mismatch checkpoint was recorded.</final>"
+        ]
+      },
+      "expected_resume_status": "workspace-mismatch",
+      "expected_checkpoint_trigger": "workspace_mismatch",
+      "expected_trace_events": [
+        "runtime_identity_mismatch",
+        "checkpoint_created"
+      ],
+      "expected_allowed_to_continue": true,
+      "notes": "Workspace mismatch should emit runtime_identity_mismatch and create a workspace_mismatch checkpoint event."
+    }
+  ]
+}

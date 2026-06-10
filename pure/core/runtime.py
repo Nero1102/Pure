@@ -764,7 +764,7 @@ class PureRuntime:
         它是 CLI 和底层工具/模型之间的核心桥梁。CLI 收到用户输入后基本只做
         一件事：调用 `agent.ask()`。而 `ask()` 内部再去驱动 `ContextManager`
         组 prompt、`model_client.complete()` 调模型、`run_tool()` 执行动作。
-        如果新人想理解 pico 是怎么“从一句话跑成一个 agent 流程”的，
+        如果想理解 pure 是怎么“从一句话跑成一个 agent 流程”的，
         这里就是最关键的入口。
         """
         run_started_at = time.monotonic()

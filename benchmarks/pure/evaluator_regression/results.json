@@ -1,0 +1,1010 @@
+{
+  "artifact_type": "evaluator-regression-benchmark",
+  "benchmark_target": "Evaluator Regression",
+  "captured_at": "2026-06-08T21:35:15.794635+00:00",
+  "cases": [
+    {
+      "actual_tools": [],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "dry_run_runtime_smoke",
+      "case_passed": true,
+      "case_source": "eval_cases.json",
+      "checkpoint_created_count": 1,
+      "expected_failure_reasons": [],
+      "expected_tool_hit": true,
+      "expected_tools": [],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "failure_reasons": [],
+      "final_status": "completed",
+      "forbidden_tool_violations": [],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "",
+      "repeated_tool_call_count": 0,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\dry_run_runtime_smoke-a7b1cb0b\\.pure\\runs\\run_20260609-053506-e572ec\\report.json",
+      "security_event_count": 0,
+      "step_budget": 2,
+      "step_budget_met": true,
+      "step_count": 0,
+      "stop_reason": "final_answer_returned",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Dry run"
+      ],
+      "success_keywords": [
+        "Dry run"
+      ],
+      "tool_rejection_count": 0,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\dry_run_runtime_smoke-a7b1cb0b\\.pure\\runs\\run_20260609-053506-e572ec\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\dry_run_runtime_smoke-a7b1cb0b"
+    },
+    {
+      "actual_tools": [],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "dry_run_knowledge_smoke",
+      "case_passed": true,
+      "case_source": "eval_cases.json",
+      "checkpoint_created_count": 1,
+      "expected_failure_reasons": [],
+      "expected_tool_hit": true,
+      "expected_tools": [],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "failure_reasons": [],
+      "final_status": "completed",
+      "forbidden_tool_violations": [],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "",
+      "repeated_tool_call_count": 0,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\dry_run_knowledge_smoke-af3b0e9d\\.pure\\runs\\run_20260609-053506-26a14c\\report.json",
+      "security_event_count": 0,
+      "step_budget": 2,
+      "step_budget_met": true,
+      "step_count": 0,
+      "stop_reason": "final_answer_returned",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Dry run"
+      ],
+      "success_keywords": [
+        "Dry run"
+      ],
+      "tool_rejection_count": 0,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\dry_run_knowledge_smoke-af3b0e9d\\.pure\\runs\\run_20260609-053506-26a14c\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\dry_run_knowledge_smoke-af3b0e9d"
+    },
+    {
+      "actual_tools": [
+        "list_files",
+        "read_file"
+      ],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "tool_requested",
+        "tool_validated",
+        "tool_executed",
+        "memory_updated",
+        "checkpoint_created",
+        "context_built",
+        "model_called",
+        "model_called",
+        "tool_requested",
+        "tool_validated",
+        "tool_executed",
+        "memory_updated",
+        "checkpoint_created",
+        "context_built",
+        "model_called",
+        "model_called",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "project_structure_analysis",
+      "case_passed": true,
+      "case_source": "eval_cases.json",
+      "checkpoint_created_count": 3,
+      "expected_failure_reasons": [],
+      "expected_tool_hit": true,
+      "expected_tools": [
+        "list_files",
+        "read_file"
+      ],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        {
+          "event_type": "tool_executed",
+          "payload": {
+            "name": "list_files",
+            "tool_status": "ok"
+          }
+        },
+        {
+          "event_type": "tool_executed",
+          "payload": {
+            "name": "read_file",
+            "tool_status": "ok"
+          }
+        },
+        {
+          "event_type": "checkpoint_created",
+          "payload": {
+            "trigger": "tool_executed"
+          }
+        },
+        "run_completed"
+      ],
+      "failure_reasons": [],
+      "final_status": "completed",
+      "forbidden_tool_violations": [],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "",
+      "repeated_tool_call_count": 0,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\project_structure_analysis-ee2073d5\\.pure\\runs\\run_20260609-053507-8f6b98\\report.json",
+      "security_event_count": 0,
+      "step_budget": 4,
+      "step_budget_met": true,
+      "step_count": 2,
+      "stop_reason": "final_answer_returned",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Project structure",
+        "README",
+        "dry-run/mock"
+      ],
+      "success_keywords": [
+        "Project structure",
+        "README",
+        "dry-run/mock"
+      ],
+      "tool_rejection_count": 0,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\project_structure_analysis-ee2073d5\\.pure\\runs\\run_20260609-053507-8f6b98\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\project_structure_analysis-ee2073d5"
+    },
+    {
+      "actual_tools": [
+        "write_file"
+      ],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "tool_requested",
+        "tool_validated",
+        "tool_executed",
+        "memory_updated",
+        "checkpoint_created",
+        "context_built",
+        "model_called",
+        "model_called",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "tool_policy_readonly",
+      "case_passed": true,
+      "case_source": "eval_cases.json",
+      "checkpoint_created_count": 2,
+      "expected_failure_reasons": [],
+      "expected_tool_hit": true,
+      "expected_tools": [
+        "write_file"
+      ],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        {
+          "event_type": "tool_executed",
+          "payload": {
+            "approval_decision": "denied_readonly",
+            "name": "write_file",
+            "tool_error_code": "readonly_block",
+            "tool_status": "rejected"
+          }
+        },
+        {
+          "event_type": "checkpoint_created",
+          "payload": {
+            "trigger": "tool_executed"
+          }
+        },
+        "run_completed"
+      ],
+      "failure_reasons": [],
+      "final_status": "completed",
+      "forbidden_tool_violations": [],
+      "forbidden_tools": [
+        "run_shell",
+        "patch_file"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "",
+      "repeated_tool_call_count": 0,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\tool_policy_readonly-9781eac9\\.pure\\runs\\run_20260609-053508-ca49ed\\report.json",
+      "security_event_count": 1,
+      "step_budget": 3,
+      "step_budget_met": true,
+      "step_count": 1,
+      "stop_reason": "final_answer_returned",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Readonly guard",
+        "blocked",
+        "dry-run/mock"
+      ],
+      "success_keywords": [
+        "Readonly guard",
+        "blocked",
+        "dry-run/mock"
+      ],
+      "tool_rejection_count": 1,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\tool_policy_readonly-9781eac9\\.pure\\runs\\run_20260609-053508-ca49ed\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\tool_policy_readonly-9781eac9"
+    },
+    {
+      "actual_tools": [],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "knowledge_retrieval_context",
+      "case_passed": true,
+      "case_source": "eval_cases.json",
+      "checkpoint_created_count": 1,
+      "expected_failure_reasons": [],
+      "expected_tool_hit": true,
+      "expected_tools": [],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "failure_reasons": [],
+      "final_status": "completed",
+      "forbidden_tool_violations": [],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "",
+      "repeated_tool_call_count": 0,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\knowledge_retrieval_context-d9c6a647\\.pure\\runs\\run_20260609-053509-1769c4\\report.json",
+      "security_event_count": 0,
+      "step_budget": 2,
+      "step_budget_met": true,
+      "step_count": 0,
+      "stop_reason": "final_answer_returned",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Knowledge retrieval",
+        "dry-run/mock"
+      ],
+      "success_keywords": [
+        "Knowledge retrieval",
+        "dry-run/mock"
+      ],
+      "tool_rejection_count": 0,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\knowledge_retrieval_context-d9c6a647\\.pure\\runs\\run_20260609-053509-1769c4\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\knowledge_retrieval_context-d9c6a647"
+    },
+    {
+      "actual_tools": [
+        "read_file"
+      ],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "tool_requested",
+        "tool_validated",
+        "tool_executed",
+        "memory_updated",
+        "checkpoint_created",
+        "context_built",
+        "model_called",
+        "model_called",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "checkpoint_creation",
+      "case_passed": true,
+      "case_source": "eval_cases.json",
+      "checkpoint_created_count": 2,
+      "expected_failure_reasons": [],
+      "expected_tool_hit": true,
+      "expected_tools": [
+        "read_file"
+      ],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        {
+          "event_type": "tool_executed",
+          "payload": {
+            "name": "read_file",
+            "tool_status": "ok"
+          }
+        },
+        {
+          "event_type": "checkpoint_created",
+          "payload": {
+            "trigger": "tool_executed"
+          }
+        },
+        {
+          "event_type": "checkpoint_created",
+          "payload": {
+            "trigger": "run_finished"
+          }
+        },
+        "run_completed"
+      ],
+      "failure_reasons": [],
+      "final_status": "completed",
+      "forbidden_tool_violations": [],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "",
+      "repeated_tool_call_count": 0,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\checkpoint_creation-431ce1b1\\.pure\\runs\\run_20260609-053509-dfd4ce\\report.json",
+      "security_event_count": 0,
+      "step_budget": 3,
+      "step_budget_met": true,
+      "step_count": 1,
+      "stop_reason": "final_answer_returned",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Checkpoint",
+        "README",
+        "dry-run/mock"
+      ],
+      "success_keywords": [
+        "Checkpoint",
+        "README",
+        "dry-run/mock"
+      ],
+      "tool_rejection_count": 0,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\checkpoint_creation-431ce1b1\\.pure\\runs\\run_20260609-053509-dfd4ce\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\checkpoint_creation-431ce1b1"
+    },
+    {
+      "actual_tools": [],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "forbidden_tool_guard",
+      "case_passed": true,
+      "case_source": "eval_cases.json",
+      "checkpoint_created_count": 1,
+      "expected_failure_reasons": [],
+      "expected_tool_hit": true,
+      "expected_tools": [],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "failure_reasons": [],
+      "final_status": "completed",
+      "forbidden_tool_violations": [],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file",
+        "delete_file"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "",
+      "repeated_tool_call_count": 0,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\forbidden_tool_guard-88c9abdd\\.pure\\runs\\run_20260609-053510-cbacb6\\report.json",
+      "security_event_count": 0,
+      "step_budget": 2,
+      "step_budget_met": true,
+      "step_count": 0,
+      "stop_reason": "final_answer_returned",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Forbidden tool guard",
+        "unused",
+        "dry-run/mock"
+      ],
+      "success_keywords": [
+        "Forbidden tool guard",
+        "unused",
+        "dry-run/mock"
+      ],
+      "tool_rejection_count": 0,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\forbidden_tool_guard-88c9abdd\\.pure\\runs\\run_20260609-053510-cbacb6\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\forbidden_tool_guard-88c9abdd"
+    },
+    {
+      "actual_tools": [],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "smoke_final_answer",
+      "case_passed": true,
+      "case_source": "evaluator_regression/cases.json",
+      "checkpoint_created_count": 1,
+      "expected_failure_reasons": [],
+      "expected_tool_hit": true,
+      "expected_tools": [],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        {
+          "event_type": "checkpoint_created",
+          "payload": {
+            "trigger": "run_finished"
+          }
+        },
+        "run_completed"
+      ],
+      "failure_reasons": [],
+      "final_status": "completed",
+      "forbidden_tool_violations": [],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "Direct final-answer smoke case for evaluator regression.",
+      "repeated_tool_call_count": 0,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\smoke_final_answer-f57e8dbf\\.pure\\runs\\run_20260609-053511-f7c022\\report.json",
+      "security_event_count": 0,
+      "step_budget": 2,
+      "step_budget_met": true,
+      "step_count": 0,
+      "stop_reason": "final_answer_returned",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Smoke final answer",
+        "dry-run/mock"
+      ],
+      "success_keywords": [
+        "Smoke final answer",
+        "dry-run/mock"
+      ],
+      "tool_rejection_count": 0,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\smoke_final_answer-f57e8dbf\\.pure\\runs\\run_20260609-053511-f7c022\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\smoke_final_answer-f57e8dbf"
+    },
+    {
+      "actual_tools": [
+        "run_shell"
+      ],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "tool_requested",
+        "tool_validated",
+        "tool_executed",
+        "memory_updated",
+        "checkpoint_created",
+        "context_built",
+        "model_called",
+        "model_called",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "forbidden_tool_guard_violation",
+      "case_passed": false,
+      "case_source": "evaluator_regression/cases.json",
+      "checkpoint_created_count": 2,
+      "expected_failure_reasons": [
+        "forbidden tools used: run_shell"
+      ],
+      "expected_tool_hit": true,
+      "expected_tools": [
+        "run_shell"
+      ],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        {
+          "event_type": "tool_executed",
+          "payload": {
+            "name": "run_shell",
+            "tool_status": "ok"
+          }
+        },
+        "run_completed"
+      ],
+      "failure_reasons": [
+        "forbidden tools used: run_shell"
+      ],
+      "final_status": "completed",
+      "forbidden_tool_violations": [
+        "run_shell"
+      ],
+      "forbidden_tools": [
+        "run_shell"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "Negative evaluator case: the safe echo command is intentionally forbidden, so the case should record a violation.",
+      "repeated_tool_call_count": 0,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\forbidden_tool_guard_violation-7368ca2f\\.pure\\runs\\run_20260609-053511-f7bddc\\report.json",
+      "security_event_count": 0,
+      "step_budget": 3,
+      "step_budget_met": true,
+      "step_count": 1,
+      "stop_reason": "final_answer_returned",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Forbidden tool violation",
+        "dry-run/mock"
+      ],
+      "success_keywords": [
+        "Forbidden tool violation",
+        "dry-run/mock"
+      ],
+      "tool_rejection_count": 0,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\forbidden_tool_guard_violation-7368ca2f\\.pure\\runs\\run_20260609-053511-f7bddc\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\forbidden_tool_guard_violation-7368ca2f"
+    },
+    {
+      "actual_tools": [
+        "list_files",
+        "list_files"
+      ],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "tool_requested",
+        "tool_validated",
+        "tool_executed",
+        "memory_updated",
+        "checkpoint_created",
+        "context_built",
+        "model_called",
+        "model_called",
+        "tool_requested",
+        "repeated_tool_call_detected",
+        "tool_validated",
+        "tool_executed",
+        "memory_updated",
+        "checkpoint_created",
+        "context_built",
+        "model_called",
+        "model_called",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "repeated_tool_call_warn",
+      "case_passed": true,
+      "case_source": "evaluator_regression/cases.json",
+      "checkpoint_created_count": 3,
+      "expected_failure_reasons": [],
+      "expected_tool_hit": true,
+      "expected_tools": [
+        "list_files"
+      ],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        "repeated_tool_call_detected",
+        "run_completed"
+      ],
+      "failure_reasons": [],
+      "final_status": "completed",
+      "forbidden_tool_violations": [],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "Warn mode should continue execution while recording repeated_tool_call_detected.",
+      "repeated_tool_call_count": 1,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\repeated_tool_call_warn-00bd4edb\\.pure\\runs\\run_20260609-053512-f3261b\\report.json",
+      "security_event_count": 0,
+      "step_budget": 4,
+      "step_budget_met": true,
+      "step_count": 2,
+      "stop_reason": "final_answer_returned",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Repeated tool warn",
+        "dry-run/mock"
+      ],
+      "success_keywords": [
+        "Repeated tool warn",
+        "dry-run/mock"
+      ],
+      "tool_rejection_count": 0,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\repeated_tool_call_warn-00bd4edb\\.pure\\runs\\run_20260609-053512-f3261b\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\repeated_tool_call_warn-00bd4edb"
+    },
+    {
+      "actual_tools": [
+        "list_files",
+        "list_files"
+      ],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "tool_requested",
+        "tool_validated",
+        "tool_executed",
+        "memory_updated",
+        "checkpoint_created",
+        "context_built",
+        "model_called",
+        "model_called",
+        "tool_requested",
+        "tool_rejected_repeated_call",
+        "tool_validated",
+        "tool_executed",
+        "memory_updated",
+        "checkpoint_created",
+        "context_built",
+        "model_called",
+        "model_called",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "repeated_tool_call_block",
+      "case_passed": true,
+      "case_source": "evaluator_regression/cases.json",
+      "checkpoint_created_count": 3,
+      "expected_failure_reasons": [],
+      "expected_tool_hit": true,
+      "expected_tools": [
+        "list_files"
+      ],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        "tool_rejected_repeated_call",
+        {
+          "event_type": "tool_executed",
+          "payload": {
+            "name": "list_files",
+            "tool_error_code": "repeated_tool_call",
+            "tool_status": "rejected"
+          }
+        },
+        "run_completed"
+      ],
+      "failure_reasons": [],
+      "final_status": "completed",
+      "forbidden_tool_violations": [],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "Block mode should record tool_rejected_repeated_call and a rejected tool_executed payload.",
+      "repeated_tool_call_count": 1,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\repeated_tool_call_block-1efd8da7\\.pure\\runs\\run_20260609-053513-bce683\\report.json",
+      "security_event_count": 0,
+      "step_budget": 4,
+      "step_budget_met": true,
+      "step_count": 2,
+      "stop_reason": "final_answer_returned",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Repeated tool block",
+        "dry-run/mock"
+      ],
+      "success_keywords": [
+        "Repeated tool block",
+        "dry-run/mock"
+      ],
+      "tool_rejection_count": 1,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\repeated_tool_call_block-1efd8da7\\.pure\\runs\\run_20260609-053513-bce683\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\repeated_tool_call_block-1efd8da7"
+    },
+    {
+      "actual_tools": [
+        "read_file"
+      ],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "tool_requested",
+        "tool_validated",
+        "tool_executed",
+        "memory_updated",
+        "checkpoint_created",
+        "context_built",
+        "model_called",
+        "model_called",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "security_event_case",
+      "case_passed": true,
+      "case_source": "evaluator_regression/cases.json",
+      "checkpoint_created_count": 2,
+      "expected_failure_reasons": [],
+      "expected_tool_hit": true,
+      "expected_tools": [
+        "read_file"
+      ],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        {
+          "event_type": "tool_executed",
+          "payload": {
+            "name": "read_file",
+            "security_event_type": "path_escape",
+            "tool_error_code": "invalid_arguments",
+            "tool_status": "rejected"
+          }
+        },
+        "run_completed"
+      ],
+      "failure_reasons": [],
+      "final_status": "completed",
+      "forbidden_tool_violations": [],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "Workspace escape should be rejected and counted as a security event.",
+      "repeated_tool_call_count": 0,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\security_event_case-42a22cfd\\.pure\\runs\\run_20260609-053514-298f63\\report.json",
+      "security_event_count": 1,
+      "step_budget": 3,
+      "step_budget_met": true,
+      "step_count": 1,
+      "stop_reason": "final_answer_returned",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Security event",
+        "dry-run/mock"
+      ],
+      "success_keywords": [
+        "Security event",
+        "dry-run/mock"
+      ],
+      "tool_rejection_count": 1,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\security_event_case-42a22cfd\\.pure\\runs\\run_20260609-053514-298f63\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\security_event_case-42a22cfd"
+    },
+    {
+      "actual_tools": [
+        "list_files"
+      ],
+      "actual_trace_events": [
+        "run_started",
+        "knowledge_retrieved",
+        "context_built",
+        "model_called",
+        "model_called",
+        "tool_requested",
+        "tool_validated",
+        "tool_executed",
+        "memory_updated",
+        "checkpoint_created",
+        "memory_updated",
+        "checkpoint_created",
+        "run_completed"
+      ],
+      "case_id": "step_budget_case",
+      "case_passed": false,
+      "case_source": "evaluator_regression/cases.json",
+      "checkpoint_created_count": 2,
+      "expected_failure_reasons": [
+        "run status was not completed"
+      ],
+      "expected_tool_hit": true,
+      "expected_tools": [
+        "list_files"
+      ],
+      "expected_trace_event_hit": true,
+      "expected_trace_event_hit_rate": 1.0,
+      "expected_trace_events": [
+        "run_started",
+        {
+          "event_type": "checkpoint_created",
+          "payload": {
+            "trigger": "step_limit_reached"
+          }
+        },
+        "run_completed"
+      ],
+      "failure_reasons": [
+        "run status was not completed"
+      ],
+      "final_status": "stopped",
+      "forbidden_tool_violations": [],
+      "forbidden_tools": [
+        "run_shell",
+        "write_file",
+        "patch_file"
+      ],
+      "model_client_class": "FakeModelClient",
+      "notes": "Negative evaluator case: runtime should stop at the step limit and preserve the failure reason.",
+      "repeated_tool_call_count": 0,
+      "report_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\step_budget_case-ca6f4901\\.pure\\runs\\run_20260609-053515-74aed5\\report.json",
+      "security_event_count": 0,
+      "step_budget": 1,
+      "step_budget_met": true,
+      "step_count": 1,
+      "stop_reason": "step_limit_reached",
+      "success_keyword_hit": true,
+      "success_keyword_hits": [
+        "Stopped after reaching"
+      ],
+      "success_keywords": [
+        "Stopped after reaching"
+      ],
+      "tool_rejection_count": 0,
+      "trace_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\step_budget_case-ca6f4901\\.pure\\runs\\run_20260609-053515-74aed5\\trace.jsonl",
+      "workspace_root": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\workspaces\\step_budget_case-ca6f4901"
+    }
+  ],
+  "eval_cases_path": "D:\\project\\pure\\eval_cases.json",
+  "model_provider": "FakeModelClient",
+  "schema_version": 1,
+  "summary": {
+    "avg_steps": 0.8461538461538461,
+    "case_count": 13,
+    "case_pass_rate": 0.8461538461538461,
+    "case_sources": {
+      "eval_cases.json": 7,
+      "evaluator_regression/cases.json": 6
+    },
+    "checkpoint_created_count": 24,
+    "expected_tool_hit_rate": 1.0,
+    "expected_trace_event_hit_rate": 1.0,
+    "failed_cases": [
+      {
+        "case_id": "forbidden_tool_guard_violation",
+        "failure_reasons": [
+          "forbidden tools used: run_shell"
+        ]
+      },
+      {
+        "case_id": "step_budget_case",
+        "failure_reasons": [
+          "run status was not completed"
+        ]
+      }
+    ],
+    "failure_reason_counts": {
+      "forbidden tools used: run_shell": 1,
+      "run status was not completed": 1
+    },
+    "forbidden_tool_violation_count": 1,
+    "p95_steps": 2.0,
+    "repeated_tool_call_count": 2,
+    "security_event_count": 2,
+    "step_budget_met_rate": 1.0,
+    "success_keyword_hit_rate": 1.0,
+    "tool_rejection_count": 3
+  },
+  "supplemental_cases_path": "D:\\project\\pure\\benchmarks\\pure\\evaluator_regression\\cases.json"
+}
