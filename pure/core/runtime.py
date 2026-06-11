@@ -1404,7 +1404,11 @@ class PureRuntime:
         self.session_store.save(self.session)
 
     def path(self, raw_path):
-        path = Path(raw_path)
+        raw_text = str(raw_path)
+        if os.name != "nt" and re.match(r"^[A-Za-z]:[\\/]", raw_text):
+            raise ValueError(f"path escapes workspace: {raw_path}")
+        path_text = raw_text if os.name == "nt" else raw_text.replace("\\", "/")
+        path = Path(path_text)
         path = path if path.is_absolute() else self.root / path
         resolved = path.resolve()
         # 所有文件类工具都被锚定在 workspace root 之下。

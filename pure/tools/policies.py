@@ -52,7 +52,10 @@ def check_readonly_policy(mode: str, tool_name: str):
 def check_shell_workspace_policy(command: str, workspace_root: Path):
     root = workspace_root.resolve()
     try:
-        tokens = shlex.split(command, posix=os.name != "nt")
+        # Use non-POSIX splitting on every platform so Windows-style paths such
+        # as ..\outside.txt keep their backslash instead of being treated as an
+        # escape sequence on Linux/macOS CI.
+        tokens = shlex.split(command, posix=False)
     except ValueError:
         tokens = command.split()
     for index, token in enumerate(tokens):

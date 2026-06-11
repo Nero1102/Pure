@@ -248,7 +248,10 @@ def _collapse_path_text(path_text: str):
                 parts.append(part)
             continue
         parts.append(part)
-    return "/".join(parts) or "."
+    collapsed = "/".join(parts) or "."
+    if collapsed.startswith("./"):
+        return collapsed[2:] or "."
+    return collapsed
 
 
 def _utc_now():
