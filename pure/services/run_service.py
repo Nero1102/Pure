@@ -29,6 +29,7 @@ class RunService:
             return self._run_payload(run)
 
     def get_trace(self, run_id: str):
+        self._ensure_cancel_trace(run_id)
         events = self._load_trace_events(run_id)
         return {"run_id": run_id, "events": events}
 
@@ -114,11 +115,25 @@ class RunService:
         except HTTPException:
             return
         path.parent.mkdir(parents=True, exist_ok=True)
+        if path.exists():
+            try:
+                events = TraceService.load_events(path)
+            except Exception:
+                events = []
+            if events and events[-1].get("event_type") == "run_cancelled":
+                return
         task_state = type("TraceTaskState", (), {"run_id": run_id, "tool_steps": 0, "status": "cancelled"})()
         event = TraceService().format_event(task_state, "run_cancelled", {"status": "cancelled"})
         with path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(event, sort_keys=True, ensure_ascii=True))
             handle.write("\n")
+
+    def _ensure_cancel_trace(self, run_id: str):
+        with self._db().session() as db:
+            run = RunRepository(db).get(run_id)
+            status = run.status if run is not None else None
+        if status == "cancelled":
+            self.append_cancel_trace(run_id)
 
     def append_failure_trace(self, run_id: str, session_id: str, error: str):
         if session_id in self.sessions:

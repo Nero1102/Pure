@@ -87,9 +87,7 @@ class TaskScheduler:
     def _mark_cancelled(self, task_id: str, run_id: str, session_id: str | None):
         from pure.db.repositories import TaskRepository, RunRepository
 
-        with self._db().session() as db:
-            TaskRepository(db).set_status(task_id, "cancelled")
-            RunRepository(db).update(run_id, status="cancelled", ended_at=_utc_now(), error="cancelled")
+        trace_written = False
         if session_id and session_id in self.sessions:
             handle = self.sessions[session_id]
             handle.status = "cancelled"
@@ -98,8 +96,12 @@ class TaskScheduler:
                 task_state.status = "cancelled"
                 handle.agent.run_store.write_task_state(task_state)
                 handle.agent.emit_trace(task_state, "run_cancelled", {"status": "cancelled"})
-                return
-        self._run_service.append_cancel_trace(run_id)
+                trace_written = True
+        if not trace_written:
+            self._run_service.append_cancel_trace(run_id)
+        with self._db().session() as db:
+            TaskRepository(db).set_status(task_id, "cancelled")
+            RunRepository(db).update(run_id, status="cancelled", ended_at=_utc_now(), error="cancelled")
 
 
 def _utc_now():
