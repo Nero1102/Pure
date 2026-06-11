@@ -54,6 +54,11 @@ class TaskScheduler:
         with self._db().session() as db:
             TaskRepository(db).set_status(task_id, "running")
             RunRepository(db).update(run_id, status="running", started_at=_utc_now())
+        with self._lock:
+            job = self.task_jobs.get(task_id)
+            if job and job.cancel_requested:
+                self._mark_cancelled(task_id, run_id, session_id)
+                return
         try:
             result = self._run_service.run_task(session_id=session_id, prompt=prompt, dry_run=dry_run, task_id=task_id, run_id=run_id)
         except Exception as exc:

@@ -16,10 +16,12 @@ from pure.services.trace_service import TraceService
 
 
 class RunService:
-    def __init__(self, db_getter, sessions: dict, run_to_session: dict):
+    def __init__(self, db_getter, sessions: dict, run_to_session: dict, task_jobs: dict | None = None, lock=None):
         self._db = db_getter
         self.sessions = sessions
         self.run_to_session = run_to_session
+        self.task_jobs = task_jobs if task_jobs is not None else {}
+        self._lock = lock
 
     def get_run(self, run_id: str):
         with self._db().session() as db:
@@ -131,8 +133,19 @@ class RunService:
     def _ensure_cancel_trace(self, run_id: str):
         with self._db().session() as db:
             run = RunRepository(db).get(run_id)
-            status = run.status if run is not None else None
-        if status == "cancelled":
+            run_status = run.status if run is not None else None
+            task_status = run.task.status if run is not None and run.task is not None else None
+            task_id = run.task_id if run is not None else None
+        cancel_requested = False
+        if task_id:
+            if self._lock is None:
+                job = self.task_jobs.get(task_id)
+                cancel_requested = bool(job and job.run_id == run_id and job.cancel_requested)
+            else:
+                with self._lock:
+                    job = self.task_jobs.get(task_id)
+                    cancel_requested = bool(job and job.run_id == run_id and job.cancel_requested)
+        if run_status == "cancelled" or task_status == "cancelled" or cancel_requested:
             self.append_cancel_trace(run_id)
 
     def append_failure_trace(self, run_id: str, session_id: str, error: str):

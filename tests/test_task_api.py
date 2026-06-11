@@ -128,3 +128,24 @@ def test_task_cancel_marks_task_run_and_trace(tmp_path):
 
     trace = client.get(f"/runs/{run['run_id']}/trace").json()
     assert trace["events"][-1]["event_type"] == "run_cancelled"
+
+
+def test_cancel_requested_run_trace_is_terminal_even_before_db_run_status_updates(tmp_path):
+    runtime_service.sessions.clear()
+    runtime_service.run_to_session.clear()
+    runtime_service.configure_database(f"sqlite:///{tmp_path / 'pure.db'}")
+    (tmp_path / "README.md").write_text("demo\n", encoding="utf-8")
+    client = TestClient(app)
+
+    project = client.post("/projects", json={"name": "Demo", "root_path": str(tmp_path)}).json()
+    task = client.post(
+        "/tasks",
+        json={"project_id": project["id"], "title": "Cancel race", "prompt": "Please run.", "dry_run": True},
+    ).json()
+    run = client.post(f"/tasks/{task['id']}/run", json={"dry_run": True}).json()
+
+    with runtime_service._lock:
+        runtime_service.task_jobs[task["id"]].cancel_requested = True
+
+    trace = client.get(f"/runs/{run['run_id']}/trace").json()
+    assert trace["events"][-1]["event_type"] == "run_cancelled"

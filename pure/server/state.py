@@ -79,6 +79,8 @@ class RuntimeService:
             db_getter=self._db,
             sessions=self.sessions,
             run_to_session=self.run_to_session,
+            task_jobs=self.task_jobs,
+            lock=self._lock,
         )
 
         # Wire scheduler -> run service
