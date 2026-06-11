@@ -22,8 +22,7 @@ jobs:
       - name: Install package
         run: |
           python -m pip install -U pip
-          python -m pip install pytest
-          python -m pip install -e .
+          python -m pip install -e ".[test]"
 
       - name: Run hermetic tests
         run: pytest
@@ -45,8 +44,7 @@ jobs:
       - name: Install package with FAISS
         run: |
           python -m pip install -U pip
-          python -m pip install pytest
-          python -m pip install -e ".[faiss]"
+          python -m pip install -e ".[test,faiss]"
 
       - name: Verify FAISS imports
         run: python -c "import faiss, numpy"
